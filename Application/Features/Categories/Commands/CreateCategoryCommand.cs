@@ -1,6 +1,7 @@
 using CleanMediator.Applicaiotn.Dtos;
 using CleanMediator.Domain;
 using CleanMediator.Interfaces;
+using FluentValidation;
 using MediatR;
 
 namespace CleanMediator.Features.Categories.Command;
@@ -33,5 +34,16 @@ public class CategoryHandler : IRequestHandler<CreateCategoryCommand, ResponseCa
         );
 
         return categoryDto;
+    }
+}
+
+public class CreateCategoryValidator : AbstractValidator<CreateCategoryCommand>
+{
+    public CreateCategoryValidator()
+    {
+       RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("Category name cannot be empty")
+            .MaximumLength(100).WithMessage("Category name cannot exceed 100 characters")
+            .Matches(@"^[a-zA-Z0-9 ]*$").WithMessage("Category name cannot contain special characters");
     }
 }
