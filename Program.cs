@@ -14,8 +14,13 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")); 
+    options.UseInMemoryDatabase("clean_mediator_db");
 });
+
+// builder.Services.AddDbContext<AppDbContext>(options =>
+// {
+//     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")); 
+// });
 
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
