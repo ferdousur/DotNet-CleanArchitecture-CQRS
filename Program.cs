@@ -5,9 +5,8 @@ using CleanMediator.Interfaces;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Serilog;
-
-
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -15,8 +14,9 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseInMemoryDatabase("clean_mediator_db");
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")); 
 });
+
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
@@ -33,7 +33,7 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavi
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
-    .WriteTo.Seq("http://localhost:8081")
+    .WriteTo.Seq(builder.Configuration["Seq:Url"]!)
     .CreateLogger();
 
 
