@@ -1,0 +1,32 @@
+name: Deploy to Azure
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login to ACR
+        uses: azure/docker-login@v1
+        with:
+          login-server: learndevops.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build Docker image
+        run: docker build -t learndevops.azurecr.io/cleanmediator:latest .
+
+      - name: Push to ACR
+        run: docker push learndevops.azurecr.io/cleanmediator:latest
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: cleanmediator-app
+          images: learndevops.azurecr.io/cleanmediator:latest
